@@ -246,6 +246,28 @@
         }
     };
 
+    // NOVO: mostrar sugestão dinâmica abaixo do campo
+    const elSugestaoWrap = document.getElementById('sugestao_entrada');
+    const elSugestaoValor = document.getElementById('sugestao_entrada_valor');
+
+    function atualizarSugestaoEntrada() {
+        if (!valorMotoInput || !elSugestaoWrap || !elSugestaoValor) return;
+
+        const vm = numFromInput(valorMotoInput);
+        const sugerido = (Number.isFinite(vm) && vm > 0) ? vm * 0.40 : 0;
+
+        elSugestaoValor.textContent = sugerido.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        });
+
+        // 👉 sempre mostra o bloco (mesmo com 0)
+        elSugestaoWrap.classList.remove('hidden');
+    }
+
+
+
+
     const updateCpfValidity = (showMessage = false) => {
         if (!cpfInput || cpfInput.disabled) {
             return true;
@@ -501,6 +523,11 @@
         renderSteps();
         renderTabs();
         renderNavigation();
+        // quando entrar na etapa 4 ("Dados da Venda"), garanta a exibição/atualização
+        if (index === 3) {
+            atualizarSugestaoEntrada();
+        }
+
         // REMOVIDO: requestAnimationFrame(atualizarNomeEtapaAtual);
     };
 
@@ -746,6 +773,8 @@
             updateCpfHintValidity();
             // ADICIONADO: Revalida a entrada quando o valor da moto é alterado
             updateValorEntradaValidity(false); 
+            atualizarSugestaoEntrada(); // <- adiciona aqui
+
         });
     }
 
@@ -786,6 +815,11 @@
             digits += e.data;
             input.value = formatBRLCentsFromDigits(digits);
             e.preventDefault();
+
+            queueMicrotask(() => {
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
             } else if (t === 'deleteContentBackward' || t === 'deleteContentForward') {
             digits = digits.slice(0, -1);
             input.value = formatBRLCentsFromDigits(digits);
@@ -796,6 +830,10 @@
 
         input.addEventListener('paste', (e) => {
             e.preventDefault();
+            queueMicrotask(() => {
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
             const text = (e.clipboardData || window.clipboardData).getData('text') || '';
             const pasted = text.replace(/\D/g, '');
             if (!pasted) return;
@@ -828,6 +866,12 @@
     attachBRLMoneyMask(document.getElementById('valor_moto'));
     attachBRLMoneyMask(document.getElementById('valor_entrada'));
     attachBRLMoneyMask(document.getElementById('renda_mensal'));
+    // inicializa a sugestão de entrada (garantia)
+    atualizarSugestaoEntrada();
+
+
+
+
 
 
      // 👇 E no final do arquivo, antes de fechar o parêntese da função:

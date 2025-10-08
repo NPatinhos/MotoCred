@@ -117,8 +117,14 @@
                             <input class="input" type="text" inputmode="numeric" id="valor_moto" name="valor_moto" required>
 
                             <label for="valor_entrada">Valor da entrada:</label>
-                            <input class="input" type="text" inputmode="numeric" id="valor_entrada" name="valor_entrada" required>
-                        </fieldset> <!-- ✅ fecha o fieldset -->
+                            <input class="input" type="text" inputmode="numeric" id="valor_entrada" name="valor_entrada" placeholder="R$ 0,00" required>
+
+                            <!-- Sugestão dinâmica (deixe logo abaixo do input) -->
+                            <div id="sugestao_entrada" class="mt-2 text-sm font-medium text-orange-700 bg-orange-50 border border-orange-200 rounded-lg p-3 hidden">
+                                Valor de Entrada sugerido: <span id="sugestao_entrada_valor">R$ 0,00</span>
+                            </div>
+                        </fieldset>
+
                     </section>     <!-- ✅ fecha só UMA section -->
 
                 </div>
